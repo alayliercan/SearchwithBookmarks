@@ -5,13 +5,13 @@ let { search } = require('sdk/places/bookmarks');
 let { getFavicon } = require('sdk/places/favicon');
 let { defer } = require('sdk/core/promise');
 let { getMostRecentBrowserWindow } = require("sdk/window/utils");
-var DEFAULT_FAVICON = "chrome://mozapps/skin/places/defaultFavicon.png";
-var SEARCH_KEY = "%s";
+const DEFAULT_FAVICON = "chrome://mozapps/skin/places/defaultFavicon.png";
+const SEARCH_KEY = "%s";
 
 var foundBookmarkTotal = 0;
 
 var mainMenu = cm.Menu({
-    label: 'Search using ...',
+    label: 'Search with Bookmarks',
     context: cm.SelectionContext(),
     items: [cm.Item({ label: "No searchable bookmark found!", data: "", image: DEFAULT_FAVICON })]
 });
@@ -63,7 +63,7 @@ function searchBookmarks(strSearch) {
 function buildSubMenu(foundBookmarks) {
     mainMenu.destroy();
     mainMenu = cm.Menu({
-        label: 'Search using ...',
+        label: 'Search with Bookmarks',
         context: cm.SelectionContext()
     });
 
