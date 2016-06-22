@@ -28,11 +28,12 @@ tabs.on('ready', function(tab) {
 });
 
 function setFavIcon(searchURL, tab) {
-    if (ss.storage[searchURL] == null) {
+    var searchURLDomain = extractDomain(searchURL);
+    if (ss.storage[searchURLDomain] == null) {
         getFavicon(tab)
             .then(function(url) {
-                ss.storage[searchURL] = url;
-                var cmitems = getMostRecentBrowserWindow().document.querySelectorAll(".addon-context-menu-item[value^='" + searchURL + "']");
+                ss.storage[searchURLDomain] = url;
+                var cmitems = getMostRecentBrowserWindow().document.querySelectorAll(".addon-context-menu-item[value*='" + searchURLDomain + "']");
                 for (var i = 0; i < cmitems.length; i++) {
                     cmitems[i].image = url;
                 }
@@ -60,6 +61,19 @@ function searchBookmarks(strSearch) {
     }
 }
 
+function extractDomain(url) {
+    var domain;
+    //find & remove protocol (http, ftp, etc.) and get domain
+    if (url.indexOf("://") > -1) {
+        domain = url.split('/')[2];
+    } else {
+        domain = url.split('/')[0];
+    }
+    //find & remove port number
+    domain = domain.split(':')[0];
+    return domain;
+}
+
 function buildSubMenu(foundBookmarks) {
     mainMenu.destroy();
     mainMenu = cm.Menu({
@@ -68,6 +82,7 @@ function buildSubMenu(foundBookmarks) {
     });
 
     for (var i = 0; i < foundBookmarks.length; i++) {
+        var foundBookmarkDomain = extractDomain(foundBookmarks[i].url);
         var subMenuItem = cm.Item({
             label: foundBookmarks[i].title,
             data: foundBookmarks[i].url,
@@ -75,10 +90,10 @@ function buildSubMenu(foundBookmarks) {
                 '  var text = window.getSelection().toString();' +
                 '  var searchURL = data.replace("%s",text); ' +
                 '  self.postMessage(searchURL); ' + '});',
-            image: (ss.storage[foundBookmarks[i].url] != null ? ss.storage[foundBookmarks[i].url] :
+            image: (ss.storage[foundBookmarkDomain] != null ? ss.storage[foundBookmarkDomain] :
                 DEFAULT_FAVICON),
             onMessage: function(searchURL) {
-                var openInNewTab = require('sdk/simple-prefs').prefs['openInNewTab']
+                var openInNewTab = require('sdk/simple-prefs').prefs['openInNewTab'];
                 if (openInNewTab) {
                     tabs.open({
                         url: searchURL,
