@@ -62,15 +62,8 @@ function searchBookmarks(strSearch) {
 }
 
 function extractDomain(url) {
-    var domain;
-    //find & remove protocol (http, ftp, etc.) and get domain
-    if (url.indexOf("://") > -1) {
-        domain = url.split('/')[2];
-    } else {
-        domain = url.split('/')[0];
-    }
-    //find & remove port number
-    domain = domain.split(':')[0];
+    var objUrl = require("sdk/url").URL(url);
+    var domain = objUrl.scheme + "://" + objUrl.host;
     return domain;
 }
 
@@ -86,13 +79,13 @@ function buildSubMenu(foundBookmarks) {
         var subMenuItem = cm.Item({
             label: foundBookmarks[i].title,
             data: foundBookmarks[i].url,
-            contentScript: 'self.on("click", function (node, data) {' +
-                '  var text = window.getSelection().toString();' +
-                '  var searchURL = data.replace("%s",text); ' +
-                '  self.postMessage(searchURL); ' + '});',
+            contentScript: 'self.on("click", function (node, data) { self.postMessage(data); });',
             image: (ss.storage[foundBookmarkDomain] != null ? ss.storage[foundBookmarkDomain] :
                 DEFAULT_FAVICON),
             onMessage: function(searchURL) {
+                var currentSelection = require("sdk/selection");
+                var searchURL = searchURL.replace(SEARCH_KEY, currentSelection.text);
+
                 var openInNewTab = require('sdk/simple-prefs').prefs['openInNewTab'];
                 if (openInNewTab) {
                     tabs.open({
