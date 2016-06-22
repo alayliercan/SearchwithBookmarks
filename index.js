@@ -87,9 +87,14 @@ function buildSubMenu(foundBookmarks) {
                 var searchURL = searchURL.replace(SEARCH_KEY, currentSelection.text);
 
                 var openInNewTab = require('sdk/simple-prefs').prefs['openInNewTab'];
+                var openInBackground = require('sdk/simple-prefs').prefs['openInBackground'];
                 if (openInNewTab) {
                     tabs.open({
+                        inBackground: openInBackground,
                         url: searchURL,
+                        onOpen: function(tab) {
+                            tab.index = tabs.activeTab.index + 1;
+                        },
                         onReady: function(tab) {
                             setFavIcon(searchURL, tab);
                         }

@@ -5,12 +5,18 @@
         "name": "openInNewTab",
         "value": true,
         "title": "Show search results in a new tab"
+    },
+    {
+        "type": "bool",
+        "name": "openInBackground",
+        "value": true,
+        "title": "Open search results in a background tab"
     }
   ],
   "title": "Search with Bookmarks",
   "name": "searchwithbookmarks",
   "type": 2,
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "Allows you to search any text selected on a website using your bookmarks.",
   "icon": "resource://@searchwithbookmarks/data/icon64.png",
   "main": "index.js",
