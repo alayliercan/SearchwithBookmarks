@@ -1,5 +1,5 @@
 ## Changelog
-### 1.4.0
+### 1.4.2
 - Now you can re-order bookmark menu items 
 - New "Advanced Settings" page
 - Optional menu short-cut to Advanced Settings
