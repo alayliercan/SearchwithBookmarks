@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>Search with Bookmarks add-on settings</title>
+    <meta charset="utf-8" />
+    <meta name="twitter:widgets:csp" content="off" />
+    <link rel="stylesheet" type="text/css" href="./lib/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="./lib/css/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="./lib/css/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="./css/settings.css" />
+    <script src="./lib/jquery.js"></script>
+    <script src="./lib/jquery-ui.js"></script>
+    <script src="./lib/bootstrap.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header clearfix">
+            <!--<nav>
+                <ul class="nav nav-pills pull-right">
+                    <li role="presentation" class="active"><a href="#">Home</a></li>
+                </ul>
+            </nav>-->
+            <h3 class="text-muted">
+                <div class="addon-image">Search with Bookmarks</div>
+            </h3>
+        </div>
+        <div class="alert alert-warning">
+            <p>
+                <strong>Tip: </strong> To re-order your menu, simply move a bookmark menu item by dragging-and-dropping,
+                and be sure to click the Save Settings button after you finish.
+            </p>
+        </div>
+        <div class="row">
+            <div class="col-md-3 no-padding-right">
+                <div id="menu" class="list-group">
+                    <a href="#sectionA" data-toggle="tab" class="list-group-item active">
+                        <p class="list-group-item-heading">Organize Menu</p>
+                    </a>
+                    <a href="#sectionB" data-toggle="tab" class="list-group-item">
+                        <p class="list-group-item-heading">Changelog</p>
+                    </a>
+                    <a href="#sectionC" data-toggle="tab" class="list-group-item">
+                        <p class="list-group-item-heading">About</p>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-9 no-padding-left">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="tab-content">
+                            <div id="sectionA" class="tab-pane fade in active">
+                                <div class="col-md-6">
+                                    <div class="standard-menu-image"></div>
+                                </div>
+                                <div class="col-md-6 no-padding-left">
+                                    <ul id="sortable" class="bookmark-menu">
+                                    </ul>
+                                </div>
+                            </div>
+                            <div id="sectionB" class="tab-pane fade">
+                                <div id="changelog-content">
+                                </div>
+                            </div>
+                            <div id="sectionC" class="tab-pane fade">
+                                <p>You can report any issue or a bug via <a href="https://github.com/alayliercan/SearchwithBookmarks/issues"
+                                        target="_blank">Github</a>. If you would like to ask a question or suggest a new feature,
+                                    please feel free to drop a review on <a href="https://addons.mozilla.org/en-GB/firefox/addon/search-with-bookmarks/"
+                                        target="_blank">Firefox Add-ons page</a>. You can also support this add-on with your
+                                    donation using the Contribute button on <a href="https://addons.mozilla.org/en-GB/firefox/addon/search-with-bookmarks/"
+                                        target="_blank">Firefox website</a>.</p>
+                                <h4>License info</h4>
+                                <p>This work is licensed under <a rel="license" href="https://opensource.org/licenses/mit-license.php"
+                                        target="_blank">The MIT License (MIT)</a>.</p>
+                                <p>This add-on uses the following open-source projects:</p>
+                                <ul>
+                                    <li><a href="https://jquery.com/" target="_blank">jQuery</a></li>
+                                    <li><a href="https://jqueryui.com/" target="_blank">jQueryUI</a></li>
+                                    <li><a href="http://getbootstrap.com/" target="_blank">Bootstrap</a></li>
+                                    <li><a href="https://github.com/showdownjs/showdown" target="_blank">Showdown</a></li>
+                                    <li><a href="http://www.typescriptlang.org/" target="_blank">TypeScript</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer text-right"><a id="btnSave" class="btn btn-success" role="button">Save Settings</a></div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <p>Version <span id="about-extension-version"></span></p>
+        </footer>
+    </div>
+    <!-- Modal -->
+    <div id="saveModal" class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Search with Bookmarks</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Your settings have been saved successfully.</p>
+                    <p>The changes will take effect on currently open tabs after you reload them.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
