@@ -28,7 +28,7 @@
   "title": "Search with Bookmarks",
   "name": "searchwithbookmarks",
   "type": 2,
-  "version": "1.4.2",
+  "version": "1.4.4",
   "description": "Allows you to search any text selected on a website using your bookmarks.",
   "icon": "resource://@searchwithbookmarks/data/img/icon64.png",
   "main": "main.js",

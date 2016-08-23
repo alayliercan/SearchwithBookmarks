@@ -37,9 +37,9 @@ function openAdvancedSettings() {
         url: data.url("settings.html"),
         onReady: function (tab) {
             let worker = tab.attach({
-                contentScriptFile: [data.url("./lib/jquery.js"),
-                    data.url("./lib/jquery-ui.js"),
-                    data.url("./lib/bootstrap.js"),
+                contentScriptFile: [data.url("./lib/jquery-2.2.4.min.js"),
+                    data.url("./lib/jquery-ui.min.js"),
+                    data.url("./lib/bootstrap.min.js"),
                     data.url("./lib/showdown.min.js"),
                     data.url("settings.js")
                 ]
@@ -72,7 +72,7 @@ var mainMenu = cm.Menu({
     })]
 });
 
-//Retrieve favIcon of a tab, save it into storage, and set the image of menu item 
+//Retrieve favIcon of a tab, save it into storage, and set the image of menu item
 function setFavIcon(swbItem, tab) {
     getFavicon(tab)
         .then(function (url) {
@@ -197,7 +197,7 @@ function exit(reason) {
     disable
     shutdown
     upgrade
-    downgrade    
+    downgrade
     */
     if (reason === "disable") {
         mainMenu.destroy();
