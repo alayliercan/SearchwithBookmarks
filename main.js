@@ -16,15 +16,12 @@ const { SWBMenu, SWBMenuItem } = require('./data/menu-wrapper.js');
 const swbMenu = new SWBMenu("Search with Bookmarks");
 const ADDON_URL = "https://addons.mozilla.org/en-GB/firefox/addon/search-with-bookmarks/";
 const SEARCH_KEY = "%s";
+var mainMenu = null;
 
 // Save advanced settings
 function saveAdvancedSettings(menuItemsOrdered) {
     try {
-        for (let i = 0; i < menuItemsOrdered.length; i++) {
-            let splittedItem = menuItemsOrdered[i].split('_');
-            let identity = splittedItem[0];
-            swbMenu.updateMenuItemOrder(identity, i);
-        }
+        swbMenu.updateMenuItemOrder(menuItemsOrdered, buildMenuItems);
     } catch (e) {
         showDialog("An unexpected error has occurred while saving settings.");
         console.error("Search with Bookmarks: " + e.message);
@@ -35,7 +32,7 @@ function saveAdvancedSettings(menuItemsOrdered) {
 function openAdvancedSettings() {
     tabs.open({
         url: data.url("settings.html"),
-        onReady: function (tab) {
+        onReady: function(tab) {
             let worker = tab.attach({
                 contentScriptFile: [data.url("./lib/jquery-2.2.4.min.js"),
                     data.url("./lib/jquery-ui.min.js"),
@@ -53,29 +50,15 @@ function openAdvancedSettings() {
 
 //Listen advanced settings button on add-on page
 var sp = require("sdk/simple-prefs");
-sp.on("openSettings", function () {
+sp.on("openSettings", function() {
     openAdvancedSettings();
 });
 
-//Create default form of menu
-var mainMenu = cm.Menu({
-    label: swbMenu.name,
-    context: cm.SelectionContext(),
-    items: [cm.Item({
-        label: "No searchable bookmark found!",
-        data: ADDON_URL,
-        image: firefoxIcons.BOOKMARKDEFAULT,
-        contentScript: 'self.on("click", function (node, data) { alert("You will now be redirected to the add-on\'s homepage where you can find instructions on how to add a searchable bookmark."); self.postMessage(data); });',
-        onMessage: function (data) {
-            tabs.open({ url: data });
-        }
-    })]
-});
 
 //Retrieve favIcon of a tab, save it into storage, and set the image of menu item
 function setFavIcon(swbItem, tab) {
     getFavicon(tab)
-        .then(function (url) {
+        .then(function(url) {
             var cmitems = getMostRecentBrowserWindow().document.querySelectorAll(".addon-context-menu-item[value*='" + swbItem.domain + "']");
             for (let i = 0; i < cmitems.length; i++) {
                 cmitems[i].image = url;
@@ -92,10 +75,10 @@ function openWebPage(swbItemId, altTextSelected) {
     var selectedText = "none";
     try {
         /*  This is the best way to retrieve selected texts and does work on latest FF v48.
-        *   However, it's not completely multiprocess-compatible,
-        *   and has thrown an exception on FF Developer Edition v50.0a2 and FF Nightly v51.0a1.
-        *   https://developer.mozilla.org/en-US/Add-ons/SDK/Guides/Multiprocess_Firefox_and_the_SDK#SDK_internal_incompatibilities
-        */
+         *   However, it's not completely multiprocess-compatible,
+         *   and has thrown an exception on FF Developer Edition v50.0a2 and FF Nightly v51.0a1.
+         *   https://developer.mozilla.org/en-US/Add-ons/SDK/Guides/Multiprocess_Firefox_and_the_SDK#SDK_internal_incompatibilities
+         */
         var currentSelection = require("sdk/selection");
         selectedText = currentSelection.text;
     } catch (e) {
@@ -111,16 +94,16 @@ function openWebPage(swbItemId, altTextSelected) {
         tabs.open({
             inBackground: openInBackground,
             url: searchURL,
-            onOpen: function (tab) {
+            onOpen: function(tab) {
                 tab.index = tabs.activeTab.index + 1;
             },
-            onReady: function (tab) {
+            onReady: function(tab) {
                 setFavIcon(swbItem, tab);
             }
         });
     } else {
         tabs.activeTab.url = searchURL;
-        tabs.on('ready', function () {
+        tabs.on('ready', function() {
             setFavIcon(swbItem, tabs.activeTab);
         });
     }
@@ -137,17 +120,33 @@ function AddSettingsShortcut() {
             label: 'Advanced Settings',
             data: '',
             contentScript: 'self.on("click", function (node, data) { self.postMessage(); });',
-            onMessage: function (data) {
+            onMessage: function(data) {
                 openAdvancedSettings();
             }
         });
         mainMenu.addItem(settingsSubMenuItem);
     }
 }
-//Build sub-menu items
-function buildSubMenu() {
-    if (swbMenu.menu.count > 0) {
+//Build menu items
+function buildMenuItems() {
+    if (mainMenu)
         mainMenu.destroy();
+
+    if (swbMenu.menu.count <= 0) {
+        mainMenu = cm.Menu({
+            label: swbMenu.name,
+            context: cm.SelectionContext(),
+            items: [cm.Item({
+                label: "No searchable bookmark found!",
+                data: ADDON_URL,
+                image: firefoxIcons.BOOKMARKDEFAULT,
+                contentScript: 'self.on("click", function (node, data) { alert("You will now be redirected to the add-on\'s homepage where you can find instructions on how to add a searchable bookmark."); self.postMessage(data); });',
+                onMessage: function(data) {
+                    tabs.open({ url: data });
+                }
+            })]
+        });
+    } else {
         mainMenu = cm.Menu({
             label: swbMenu.name,
             context: cm.SelectionContext()
@@ -158,10 +157,10 @@ function buildSubMenu() {
                 label: swbMenu.menu.items[i].title,
                 data: swbMenu.menu.items[i].url,
                 contentScript: 'self.on("click", function (node, data) { ' +
-                ' var altTextSelected  = window.getSelection().toString(); ' +
-                ' self.postMessage(altTextSelected); });',
+                    ' var altTextSelected  = window.getSelection().toString(); ' +
+                    ' self.postMessage(altTextSelected); });',
                 image: swbMenu.menu.items[i].favicon,
-                onMessage: function (altTextSelected) {
+                onMessage: function(altTextSelected) {
                     openWebPage(identity, altTextSelected);
                 }
             });
@@ -172,9 +171,8 @@ function buildSubMenu() {
 }
 
 //Refresh context-menu if required
-tabs.on('ready', function (tab) {
-    swbMenu.updateByBookmarks(SEARCH_KEY);
-    buildSubMenu();
+tabs.on('ready', function(tab) {
+    swbMenu.updateByBookmarks(SEARCH_KEY, buildMenuItems);
 });
 
 function main(options) {
@@ -186,8 +184,7 @@ function main(options) {
     upgrade
     downgrade
     */
-    swbMenu.updateByBookmarks(SEARCH_KEY);
-    buildSubMenu();
+    swbMenu.updateByBookmarks(SEARCH_KEY, buildMenuItems);
 }
 
 function exit(reason) {

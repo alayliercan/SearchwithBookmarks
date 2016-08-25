@@ -61,7 +61,7 @@ var SWBMenu = Class({
         };
     },
     type: 'SWBMenu',
-    updateByBookmarks: function updateByBookmarks(searchKeyword) {
+    updateByBookmarks: function updateByBookmarks(searchKeyword, callback) {
         var deferredSearchBookmarks = searchBookmarks(searchKeyword);
         var thisRef = this;
         deferredSearchBookmarks.then(function(foundBookmarks) {
@@ -80,7 +80,7 @@ var SWBMenu = Class({
                     thisRef.updateMenuItem(swbMenuItem);
                 }
             }
-            thisRef.save();
+            thisRef.save(callback);
         }, function(e) {
             //console.log(e.message);
         });
@@ -100,6 +100,8 @@ var SWBMenu = Class({
                 this.menu.items[idx].url = menuItem.url;
                 this.menu.items[idx].tags = menuItem.tags;
                 this.menu.items[idx].orphan = menuItem.orphan;
+            } else {
+                this.insertMenuItem(menuItem);
             }
         }
     },
@@ -115,12 +117,16 @@ var SWBMenu = Class({
         }
         this.save();
     },
-    updateMenuItemOrder: function updateMenuItemFavIcon(itemId, itemOrder) {
-        var idx = this.menu.items.map((el) => el.identity).indexOf(itemId);
-        if (idx !== -1) {
-            this.menu.items[idx].order = itemOrder;
-            this.save();
+    updateMenuItemOrder: function updateMenuItemFavIcon(menuItemsOrdered, callback) {
+        for (let i = 0; i < menuItemsOrdered.length; i++) {
+            let splittedItem = menuItemsOrdered[i].split('_');
+            let itemId = splittedItem[0];
+            var idx = this.menu.items.map((el) => el.identity).indexOf(itemId);
+            if (idx !== -1) {
+                this.menu.items[idx].order = i;
+            }
         }
+        this.save(callback);
     },
     findById: function findById(menuId) {
         var idx = this.menu.items.map((el) => el.identity).indexOf(menuId);
@@ -136,12 +142,14 @@ var SWBMenu = Class({
             return 1;
         return 0;
     },
-    save: function save() {
+    save: function save(callback) {
         //remove orphan entries and save
         this.menu.items = this.menu.items.filter(x => x.orphan === false);
         this.menu.items = this.menu.items.sort(this.sortItems);
         this.menu.count = this.menu.items.length;
         ss.storage['swbmenu'] = JSON.stringify(this.menu);
+        if (callback)
+            callback();
     }
 });
 

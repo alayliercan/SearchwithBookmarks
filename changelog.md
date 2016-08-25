@@ -1,4 +1,8 @@
 ## Changelog
+### 1.4.5
+- Minor bug-fix for detecting mis-typed address corrections
+- Re-ordered menu items are now displayed on currently open tabs immediately
+
 ### 1.4.4
 - Now you can re-order bookmark menu items
 - New "Advanced Settings" page
