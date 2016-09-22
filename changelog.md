@@ -1,4 +1,7 @@
 ## Changelog
+### 1.4.6
+- The issue of favicons being displayed incorrectly when the search results tabs were used for further browsing has been fixed.
+
 ### 1.4.5
 - Minor bug-fix for detecting mis-typed address corrections
 - Re-ordered menu items are now displayed on currently open tabs immediately
